@@ -12,14 +12,27 @@ class Weather_info:
         self.api_key = api_key
         self.date = date
         self.location = 'Warsaw'
+        self.info = self.get_info()
         
     def get_info(self):
-        self.url_parameters = '&include=current&elements=precip,datetime'
+        self.url_parameters = '&include=current&elements=precip,datetime,precipprob'
         request_url = f'{self.BASE_URL}/{self.location}/{self.date}?key={self.api_key}{self.url_parameters}'
         r = requests.get(request_url)
         info = r.json()
         return info
 
+    def get_precip_info(self):
+        precip = float(self.info['days'][0]['precip'])
+        print(precip)
+        return self.get_rain_chance(precip)
+
+    def get_rain_chance(self, precip):
+        if precip > 0.0:
+            return 'Będzie padać.'
+        elif precip == 0.0:
+            return 'Nie będzie padać.'
+        else:
+            return 'Nie wiem.'
 
 if len(sys.argv) == 2:
     weather = Weather_info(api_key=sys.argv[1])
@@ -31,9 +44,9 @@ else:
     
 print(weather.date)
 print(weather.get_info())
+print(weather.get_precip_info())
 
 
 
 '''warsaw_lat = 52.25
-warsaw_lon = 21
-excluded_modes = 'minutely,hourly,alerts'''
+warsaw_lon = 21'''
